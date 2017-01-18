@@ -205,6 +205,7 @@ function DiffRent(rental){
 	return dateDiff(date2,date1);
 }
 
+
 function price (rental){
 
 	rental.price = rental.distance * RecuperationPrice(rental)[0] + DiffRent(rental)* RecuperationPrice(rental)[1];
@@ -232,31 +233,38 @@ function price (rental){
 
 function RecupRent(actor)
 {
-	var rentalId = actors.rentalId;
+	var rentalId = actor.rentalId;
+	
 	for (var i =0; i< rentals.length;i++)
 	{
+		
 		if (rentalId == rentals[i].id)
 		{
-			var result = rentals[i];
+		
+			var result = [rentals[i].price, rentals[i].commission.insurance, rentals[i].commission.assistance, rentals[i].commission.drivy, rentals[i].options.deductibleReduction, rentals[i].returnDate, rentals[i].pickupDate];
+			 
 		}
+
 	}
 
 	return result;
 
 }
 
-function Paye(actor)
+function Paye(actor) //EXERCICE 5 
 {
 	var rental = RecupRent(actor);
-	actor.payment[0].amount = rental.price; //driver
-	actor.payment[1].amount = (rental.price*70)/100; //Owner
-	actor.payment[2].amount= rental.commission.insurance ; //insurance
-	actor.payment[3].amount= rental.commission.assistance;
-	actor.payment[4].amount = rental.commission.drivy;
-		if (rental.options.deductibleReduction == true)
+	actor.payment[0].amount = rental[0]; //driver
+	actor.payment[1].amount = (rental[0]*70)/100; //Owner
+	actor.payment[2].amount= rental[1] ; //insurance
+	actor.payment[3].amount= rental[2]; //assistance
+		if (rental[4] == true) // option or not
 	{
-		actor.payment[4].amount+= 4* DiffRent(rental);
+		actor.payment[4].amount = rental[3] + 4* dateDiff(rental[5], rental[6]);//drivy + option
 	}
+		else{
+			actor.payment[4].amount = rental[3]; //drivy
+		}
 }
 console.log(cars);
 console.log(rentals);
